@@ -1,20 +1,52 @@
 import { shallowMount } from "@vue/test-utils";
 import demo1 from "@/components/demo1.vue";
-
+import axios from "axios";
+import { x } from "../exportjs.js";
 describe("demo1.vue", () => {
-  beforeAll(() => console.log(1));
-  beforeEach(() => console.log(2));
-  afterEach(() => console.log(4));
-  afterAll(() => console.log(3));
-  //执行顺序：12424243
   it("renders props.msg when passed", () => {
     const wrapper = shallowMount(demo1, {});
     expect(wrapper.text()).toMatch("msg is 1");
   });
-  test("1+1==2?", () => {
-    expect(1 + 1).toBe(2);
+});
+
+describe.only("axios", () => {
+  jest.setTimeout(100000);
+  test("请求数据done", done => {
+    //https://jsonplaceholder.typicode.com/posts/1
+    axios.get("https://jsonplaceholder.typicode.com/posts/1").then(response => {
+      expect(response.data.userId).toEqual(1);
+      done();
+    });
   });
-  test("this will be the only test that runs", () => {
-    expect(true).toBe(true);
+
+  test("请求数据Promise", () => {
+    return axios
+      .get("https://jsonplaceholder.typicode.com/posts/1")
+      .then(response => {
+        expect(response.data.userId).toEqual(1);
+      });
+  });
+
+  test("请求数据assertions", () => {
+    expect.assertions(1); // 断言，必须执行一次expect
+    return axios
+      .get("https://jsonplaceholder.typicode.com/posts/1")
+      .then(response => {
+        expect(response.data.userId).toEqual(1);
+      });
+  });
+
+  test("请求数据async/await", async () => {
+    const response = await axios.get(
+      "https://jsonplaceholder.typicode.com/posts/1"
+    );
+    expect(response.data.userId).toEqual(1);
+  });
+});
+
+describe("import js", () => {
+  test("import js", () => {
+    const val = x();
+    console.log(val);
   });
 });
